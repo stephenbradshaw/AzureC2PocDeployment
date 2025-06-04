@@ -6,10 +6,15 @@ These template allow resources to quickly be deployed to your Azure account in a
 
 The templates setup a minimal set of low cost resources to support this testing in region `westus2`.
 
+
+# Available templates
+
 There are currently two different sets of templates available here:
-* The `base` template which deploys the POC C2 compute instance (using [Sliver](https://github.com/BishopFox/sliver)) and basic network resources that will be used by the domain fronting POCs
+* The `base` template which deploys the POC C2 compute instance (using [Sliver](https://github.com/BishopFox/sliver)) and basic network resources that are used as core supporting components by the domain fronting POCs
 * The `functionapp` template which deploys an [Azure Function App](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview) to forward implant traffic as discussed on my blog [here](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html)
 
+
+# Creating the Resource Group
 
 These resources will be deployed in the `C2VMRG` resource group, that you can create using the [Azure CLI](https://learn.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest) like so.
 
@@ -19,7 +24,7 @@ az group create --name C2VMRG --location westus2
 
 Once this has been created we next need to deploy the base resources.
 
-# Base resources
+# Creating base resources
 
 The related files for this deployment template sit in `./base`
 
@@ -28,6 +33,7 @@ This template will create the following Azure resources in the resource group:
 * A virtual network the VM will be attached to, allowing private cloud traffic to the VM from other Azure resources we can create in the resource group
 * A Network Security Group attached to the VM that allows SSH traffic from your public IP address and pivate traffic from your virtual network to port 80 to allow implant traffic forwarding
 
+## User data script
 There is also a user data script that will run on VM startup and do the Operating System install, as well as setting up Apache in forwarding mode on port 80 that will act as a filter for incoming traffic and forward all valid traffic to local port 8888. It will also install a Sliver server that should start a listener job on port 8888 to receive this. If this doesn't start correctly for whatever reason you can connect using the sliver client `/opt/sliver/sliver-client` and run the command `http -l 8888 -p` to start the job once the server is running and configured.
 
 This install script can take a little while to finish execution, so make sure you check for the file `/home/ubuntu/setupdone` that is created at the end of the script execution before trying to fix anything. 
@@ -38,6 +44,7 @@ The contents of the install script is listed in the `install.sh` file, but needs
 cat install.sh | base64 -w 0
 ```
 
+## Settings to change before deployment
 
 Before deployment, you also need to identify your public IP address and create an SSH key to use when accessing your VM.
 
@@ -55,11 +62,16 @@ You then need to replace the following strings in `parameters.json` with your ow
 * `<YOUR_PUBLIC_KEY_HERE>` - replace with the contents of your ssh public key file, in my case this was the contents of file `id_ed25519_azure.pub`
 
 
+## Deploying
+
 With that done, you can actually deploy the resources using the following command (with directory `./base` as your present working directory).
 
 ```
 az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
 ```
+
+
+## Accessing the VM after deployment
 
 Once the command execution has completed, check the [Resource Group section of the Azure Portal](https://portal.azure.com/#browse/resourcegroups) for the `C2VMRG` resource group, and check the VM resource within to confirm it has been correctly created. Grab the public IP address of the VM, and setup an ssh config entry as per the simple example below.
 
@@ -74,7 +86,7 @@ Host azurevm
 You then should be able to ssh into the instance using a command similar to `ssh azurevm`.
 
 
-# Azure Function App fronting
+# Creating an Azure Function App for C2 fronting
 
 The related files for this deployment template sit in `./functionapp`.
 
