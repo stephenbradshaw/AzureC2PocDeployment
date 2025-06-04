@@ -6,6 +6,8 @@ These template allow resources to quickly be deployed to your Azure account in a
 
 The templates setup a minimal set of low cost resources to support this testing in region `westus2`.
 
+For more information, see my blog post [here](https://thegreycorner.com/2025/06/04/azure_c&c_poc_infra_deployment.html).
+
 
 # Available templates
 
