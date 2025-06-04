@@ -48,18 +48,29 @@ cat install.sh | base64 -w 0
 
 Before deployment, you also need to identify your public IP address and create an SSH key to use when accessing your VM.
 
-A key can be created using a command similar to the following:
+A key can be created using a command similar to the following, which will create a key named `id_ed25519_azure` in your local ssh directory.
 
 ```
-ssh-keygen -t ed25519
+ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519_azure
 ```
-
-I called my key `id_ed25519_azure`. 
 
 You then need to replace the following strings in `parameters.json` with your own values.
 
 * `<YOUR_IP_ADDRESS_HERE>` - replace with the public facing IP address of the machine you will use to ssh to your Azure VM - this is added to a rule in your VMs network security group allowing TCP port 22 traffic from this address
 * `<YOUR_PUBLIC_KEY_HERE>` - replace with the contents of your ssh public key file, in my case this was the contents of file `id_ed25519_azure.pub`
+
+
+
+Assuming a public key file of `~/.ssh/id_ed25519_azure.pub`, the following commands run can be used to automatically perform the necessary replacements.
+
+```
+export PUBLIC_IP=$(curl ipinfo.io/ip)
+sed -i "s/<YOUR_IP_ADDRESS_HERE>/$PUBLIC_IP/g" parameters.json
+
+export PUBLIC_KEY=$(cat ~/.ssh/id_ed25519_azure.pub | sed 's/\//\\\//g')
+sed -i "s/<YOUR_PUBLIC_KEY_HERE>/$PUBLIC_KEY/g" parameters.json
+```
+
 
 
 ## Deploying
@@ -93,6 +104,14 @@ The related files for this deployment template sit in `./functionapp`.
 This template deploys a function app to forward implant traffic to the C2 VM created using the `base` resource template discussed above as documented in this blog post [here](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html).
 
 Before deploying, you need to choose a globally unique function app name and replace the instances of the string `<FUNCTION_APP_NAME_HERE>` in `parameters.json` with that name.
+
+
+Commands line the following can be used to perform the replacement, assuming a function app name of `randofunctionappname1234567abcdef`:
+```
+export FUNCTION_APP_NAME=randofunctionappname1234567abcdef
+sed -i "s/<FUNCTION_APP_NAME_HERE>/$FUNCTION_APP_NAME/g" parameters.json
+```
+
 
 Then, create the function app resource using the following command:
 
