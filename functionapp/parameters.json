@@ -1,0 +1,45 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "subscriptionId": {
+            "value": "9d4d896b-cb2e-499c-bee3-eed2e1cc9aa3"
+        },
+        "name": {
+            "value": "<FUNCTION_APP_NAME_HERE>"
+        },
+        "location": {
+            "value": "West US 2"
+        },
+        "storageBlobContainerName": {
+            "value": "app-package-<FUNCTION_APP_NAME_HERE>-618e3ea"
+        },
+        "storageAccountName": {
+            "value": "c2vmrgb9f1"
+        },
+        "sku": {
+            "value": "FlexConsumption"
+        },
+        "skuCode": {
+            "value": "FC1"
+        },
+        "workerSize": {
+            "value": "0"
+        },
+        "workerSizeId": {
+            "value": "0"
+        },
+        "numberOfWorkers": {
+            "value": "1"
+        },
+        "hostingPlanName": {
+            "value": "ASP-C2VMRG-bcfe"
+        },
+        "serverFarmResourceGroup": {
+            "value": "C2VMRG"
+        },
+        "alwaysOn": {
+            "value": false
+        }
+    }
+}
