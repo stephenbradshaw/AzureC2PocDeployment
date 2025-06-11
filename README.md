@@ -137,3 +137,31 @@ az functionapp deployment source config-zip -g C2VMRG -n <FUNCTION_APP_NAME_HERE
 
 Check the [blog post](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html) for more context on how this works.
 
+
+
+# Creating an Azure Front Door instance for C2 fronting
+
+The related files for this deployment template sit in `./azurefd`.
+
+This template deploys an Azure Front Door instance that will forward traffic to an existing Azure Function App (that forwards to a C2) similar to the one created using the process mentioned above. This will essentially provide an new entry point (with name and SSL certificate within the `azurefd.net` domain) for implant traffic that can be used in addition to or instead of the Function App one.
+
+Before deploying, you need to replace the string `<FUNCTION_APP_NAME_HERE>` in `parameters.json` with the name of the Azure Function App you created previously (`randofunctionappname1234567abcdef` in the example above) and replace the string `<FRONT_DOOR_ENDPOINT_NAME_HERE>` with the endpoint name for your Front Door instance (this value will comprise part of the final endpoint URL so choose wisely).
+
+Commands line the following can be used to perform the replacement, assuming a function app name of `randofunctionappname1234567abcdef` and a Front Door endpoint name of `testfd`:
+
+```
+export FUNCTION_APP_NAME=randofunctionappname1234567abcdef
+sed -i "s/<FUNCTION_APP_NAME_HERE>/$FUNCTION_APP_NAME/g" parameters.json
+
+export ENDPOINT_NAME=testfd
+sed -i "s/<FRONT_DOOR_ENDPOINT_NAME_HERE>/$ENDPOINT_NAME/g" parameters.json
+```
+
+The resources can then be created using the normal deployment command.
+
+```
+az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
+```
+
+Once the deployment is done, the command will include the generated domain name in the `frontDoorEndpointHostName` output field, and you can also get it from within the Azure portal.
+

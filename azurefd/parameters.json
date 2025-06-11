@@ -1,0 +1,12 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "appName": {
+            "value": "<FUNCTION_APP_NAME_HERE>"
+        },
+        "frontDoorEndpointName": {
+            "value": "<FRONT_DOOR_ENDPOINT_NAME_HERE>"
+        }
+    }
+}
