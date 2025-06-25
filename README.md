@@ -147,7 +147,7 @@ Check the [blog post](https://thegreycorner.com/2025/05/07/azure-service-C2-forw
 
 # Creating an Azure Front Door instance for C2 fronting
 
-The related files for this deployment template sit in `./azurefd`.
+The related files for this deployment template sit in `./azurefd`. For more information on the Azure Front Door setup, see the [blog post here](https://thegreycorner.com/2025/06/25/azure-service-c2-forwarding-part2.html).
 
 This template deploys an Azure Front Door instance that will forward traffic to an existing Azure Function App (that forwards to a C2) similar to the one created using the process mentioned above. This will essentially provide an new entry point (with name and SSL certificate within the `azurefd.net` domain) for implant traffic that can be used in addition to or instead of the Function App one.
 
@@ -173,6 +173,14 @@ Once the deployment is done, the command will include the generated domain name 
 
 ```
 az afd endpoint list -g C2VMRG --profile-name MyFrontDoor --query '[].hostName | [0]'
+```
+
+# Deleting the resources
+
+Once you're done with the POC environment, you can delete the dedicated Resource Group and all its contents as follows:
+
+```
+az group delete --name C2VMRG
 ```
 
 
