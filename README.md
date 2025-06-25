@@ -88,6 +88,12 @@ az deployment group create --resource-group C2VMRG --template-file template.json
 
 Once the command execution has completed, check the [Resource Group section of the Azure Portal](https://portal.azure.com/#browse/resourcegroups) for the `C2VMRG` resource group, and check the VM resource within to confirm it has been correctly created. Grab the public IP address of the VM, and setup an ssh config entry as per the simple example below.
 
+The public IP address of the vm can also be grabbed like so using the az cli:
+
+```
+az vm list-ip-addresses -g C2VMRG --query "[].virtualMachine[].network.publicIpAddresses[].ipAddress | [0]"
+```
+
 
 ```
 Host azurevm
