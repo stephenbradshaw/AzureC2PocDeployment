@@ -169,5 +169,11 @@ The resources can then be created using the normal deployment command.
 az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
 ```
 
-Once the deployment is done, the command will include the generated domain name in the `frontDoorEndpointHostName` output field, and you can also get it from within the Azure portal.
+Once the deployment is done, the command will include the generated domain name in the `frontDoorEndpointHostName` output field, and you can also get it from within the Azure portal, or using the command below:
+
+```
+az afd endpoint list -g C2VMRG --profile-name MyFrontDoor --query '[].hostName | [0]'
+```
+
+
 
