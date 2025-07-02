@@ -32,6 +32,9 @@
         "publicIpAddressType": {
             "type": "string"
         },
+        "dnsLabelPrefix": {
+            "type": "string"
+        },
         "publicIpAddressSku": {
             "type": "string"
         },
@@ -142,7 +145,10 @@
             "apiVersion": "2020-08-01",
             "location": "[parameters('location')]",
             "properties": {
-                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]"
+                "publicIpAllocationMethod": "[parameters('publicIpAddressType')]",
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(parameters('dnsLabelPrefix'), uniqueString(subscription().subscriptionId))]"
+                }
             },
             "sku": {
                 "name": "[parameters('publicIpAddressSku')]"

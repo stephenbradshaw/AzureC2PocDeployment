@@ -60,6 +60,7 @@ You then need to replace the following strings in `parameters.json` with your ow
 
 * `<YOUR_IP_ADDRESS_HERE>` - replace with the public facing IP address of the machine you will use to ssh to your Azure VM - this is added to a rule in your VMs network security group allowing TCP port 22 traffic from this address
 * `<YOUR_PUBLIC_KEY_HERE>` - replace with the contents of your ssh public key file, in my case this was the contents of file `id_ed25519_azure.pub`
+* `<YOUR_DNS_LABEL_HERE>` - replace with a prefix to be used as part of the DNS name that will be associated with the VMs public IP address, which will be in the format of `<YOUR_DNS_LABEL_HERE><RANDOM_CHARACTERS>.westus2.cloudapp.azure.com`
 
 
 
@@ -71,8 +72,10 @@ sed -i "s/<YOUR_IP_ADDRESS_HERE>/$PUBLIC_IP/g" parameters.json
 
 export PUBLIC_KEY=$(cat ~/.ssh/id_ed25519_azure.pub | sed 's/\//\\\//g')
 sed -i "s/<YOUR_PUBLIC_KEY_HERE>/$PUBLIC_KEY/g" parameters.json
-```
 
+export DNS_LABEL=mytestsystem
+sed -i "s/<YOUR_DNS_LABEL_HERE>/$DNS_LABEL/g" parameters.json
+```
 
 
 ## Deploying
@@ -87,6 +90,12 @@ az deployment group create --resource-group C2VMRG --template-file template.json
 ## Accessing the VM after deployment
 
 Once the command execution has completed, check the [Resource Group section of the Azure Portal](https://portal.azure.com/#browse/resourcegroups) for the `C2VMRG` resource group, and check the VM resource within to confirm it has been correctly created. Grab the public IP address of the VM, and setup an ssh config entry as per the simple example below.
+
+The DNS name that has been created for your VM can be retrieved using the following az cli command:
+
+```
+az network public-ip list -g C2VMRG --query "[].dnsSettings.fqdn | [0]"
+```
 
 The public IP address of the vm can also be grabbed like so using the az cli:
 

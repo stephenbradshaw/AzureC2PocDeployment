@@ -72,6 +72,9 @@
         "publicIpAddressType": {
             "value": "Static"
         },
+        "dnsLabelPrefix": {
+            "value": "<YOUR_DNS_LABEL_HERE>"
+        },
         "publicIpAddressSku": {
             "value": "Standard"
         },
