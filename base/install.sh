@@ -19,6 +19,37 @@ ln -s /opt/sliver/sliver-server_linux_$SLIVER_VERSION /opt/sliver/sliver-server
 
 echo '127.0.0.1 backend' >> /etc/hosts
 
+cat > /etc/apache2/sites-available/ssl-forward-http.conf <<'endmsg'
+<VirtualHost 0.0.0.0:443>
+
+    SSLEngine on
+
+    SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+    SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+
+    RewriteEngine On
+
+    <Directory /var/www/html>
+        Options FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        FileETag None
+    </Directory>
+
+    ProxyPreserveHost On
+
+    ServerName localhost
+    DocumentRoot /var/www/html
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log "%h %l %u %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\""
+
+    ServerSignature Off
+
+</VirtualHost>
+endmsg
+
+
 
 cat > /etc/apache2/sites-available/forward-http.conf <<'endmsg'
 <VirtualHost 0.0.0.0:80>
@@ -37,7 +68,7 @@ cat > /etc/apache2/sites-available/forward-http.conf <<'endmsg'
     DocumentRoot /var/www/html
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
+    CustomLog ${APACHE_LOG_DIR}/access.log "%h %l %u %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\""
 
 
     ServerSignature Off
