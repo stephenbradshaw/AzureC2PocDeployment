@@ -184,6 +184,49 @@ Once the deployment is done, the command will include the generated domain name 
 az afd endpoint list -g C2VMRG --profile-name MyFrontDoor --query '[].hostName | [0]'
 ```
 
+# Creating an API Management service instance for C2 fronting
+
+Rough instructions only for the moment. This creates an API Management service that can front the Function App deployment mentioned above. Set that up first.
+
+Replace parameters in file. API_NAME needs to be globally unique, I might fix this in the template to generate the name randomly to help here
+```
+export API_NAME=myapi987654321
+sed -i "s/<API_NAME>/$API_NAME/g" parameters.json
+
+export NOTIFY_EMAIl='myemail@whatever.com'
+sed -i "s/<NOTIFY_EMAIL>/$NOTIFY_EMAIl/g" parameters.json
+```
+
+Deploy
+
+```
+az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
+```
+
+
+Monitor the status of the deployment - it takes a while, wait until the status is Succeeded.
+
+```
+az apim list --query '[0].[name, provisioningState]'
+```
+
+
+Once deployed you need to create an API instance
+
+```
+export API_SERVICE_NAME=$(az apim list --query '[0].name' | jq -r)
+export FAHOST=$(az functionapp list --query '[0].hostNames[0]' | jq -r)
+az apim api import -g C2VMRG -n $API_SERVICE_NAME --specification-format OpenApiJson --api-id myapi --path '/' --display-name 'MyAPI' --subscription-required false  --service-url https://$FAHOST/  --api-type http --protocols http https --description 'My API' --specification-url https://raw.githubusercontent.com/stephenbradshaw/AzureC2PocDeployment/refs/heads/main/apim/azure_api_management_service_def.json
+```
+
+
+Once deployed you can retrieve the URL at which the frontend will be available as follows
+
+```
+az apim list --query '[0].gatewayUrl'
+```
+
+
 # Deleting the resources
 
 Once you're done with the POC environment, you can delete the dedicated Resource Group and all its contents as follows:
