@@ -1,0 +1,109 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+        "title": "MyAPI",
+        "description": "My API",
+        "version": "1.0"
+    },
+    "paths": {
+        "/{*path}": {
+            "get": {
+                "summary": "GET",
+                "description": "GET",
+                "operationId": "path",
+                "parameters": [{
+                    "name": "*path",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": ""
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "201": {
+                        "description": ""
+                    },
+                    "203": {
+                        "description": ""
+                    },
+                    "204": {
+                        "description": ""
+                    },
+                    "205": {
+                        "description": ""
+                    },
+                    "206": {
+                        "description": ""
+                    },
+                    "207": {
+                        "description": ""
+                    },
+                    "301": {
+                        "description": ""
+                    },
+                    "302": {
+                        "description": ""
+                    }
+                }
+            },
+            "post": {
+                "summary": "POST",
+                "description": "POST",
+                "operationId": "post",
+                "parameters": [{
+                    "name": "*path",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": ""
+                    }
+                }],
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "201": {
+                        "description": ""
+                    },
+                    "202": {
+                        "description": ""
+                    },
+                    "203": {
+                        "description": ""
+                    },
+                    "204": {
+                        "description": ""
+                    },
+                    "301": {
+                        "description": ""
+                    },
+                    "302": {
+                        "description": ""
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "apiKeyHeader": {
+                "type": "apiKey",
+                "name": "Ocp-Apim-Subscription-Key",
+                "in": "header"
+            },
+            "apiKeyQuery": {
+                "type": "apiKey",
+                "name": "subscription-key",
+                "in": "query"
+            }
+        }
+    },
+    "security": [{
+        "apiKeyHeader": []
+    }, {
+        "apiKeyQuery": []
+    }]
+}

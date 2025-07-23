@@ -1,0 +1,56 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "apimName": {
+            "value": "<API_NAME>"
+        },
+        "location": {
+            "value": "westus2"
+        },
+        "tier": {
+            "value": "Developer"
+        },
+        "capacity": {
+            "value": "1"
+        },
+        "adminEmail": {
+            "value": "<NOTIFY_EMAIL>"
+        },
+        "organizationName": {
+            "value": "test"
+        },
+        "virtualNetworkType": {
+            "value": "None"
+        },
+        "tagsByResource": {
+            "value": {}
+        },
+        "vnet": {
+            "value": {}
+        },
+        "zones": {
+            "value": []
+        },
+        "customProperties": {
+            "value": {}
+        },
+        "identity": {
+            "value": {
+                "type": "None"
+            }
+        },
+        "appInsightsObject": {
+            "value": {
+                "id": null,
+                "name": null
+            }
+        },
+        "privateDnsDeploymentName": {
+            "value": "PrivateDNS-1753233544966"
+        },
+        "subnetDeploymentName": {
+            "value": "UpdateSubnetDeployment-1753233544966"
+        }
+    }
+}
