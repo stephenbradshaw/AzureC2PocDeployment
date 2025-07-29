@@ -42,7 +42,7 @@ cat > /etc/apache2/sites-available/ssl-forward-http.conf <<'endmsg'
     DocumentRoot /var/www/html
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log "%h %l %u %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\" ssl"
+    CustomLog ${APACHE_LOG_DIR}/access.log "%h \"%{X-Forwarded-For}i\" \"%{forwarded}i\"  %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\" ssl"
 
     ServerSignature Off
 
@@ -68,7 +68,7 @@ cat > /etc/apache2/sites-available/forward-http.conf <<'endmsg'
     DocumentRoot /var/www/html
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log "%h %l %u %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\""
+    CustomLog ${APACHE_LOG_DIR}/access.log "%h \"%{X-Forwarded-For}i\" \"%{forwarded}i\"  %t \"%r\" %>s %b %{Host}i \"%{Referer}i\" \"%{User-agent}i\""
 
 
     ServerSignature Off
