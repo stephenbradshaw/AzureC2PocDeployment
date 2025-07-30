@@ -109,6 +109,7 @@ systemctl daemon-reload
 
 systemctl start sliver
 systemctl status sliver
+systemctl enable sliver
 
 
 cat > /var/www/html/index.html <<'endmsg'

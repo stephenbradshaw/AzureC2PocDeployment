@@ -13,7 +13,9 @@ For more information, see my blog post [here](https://thegreycorner.com/2025/06/
 
 There are currently two different sets of templates available here:
 * The `base` template which deploys the POC C2 compute instance (using [Sliver](https://github.com/BishopFox/sliver)) and basic network resources that are used as core supporting components by the domain fronting POCs
-* The `functionapp` template which deploys an [Azure Function App](https://learn.microsoft.com/en-us/azure/azure-functions/functions-overview) to forward implant traffic as discussed on my blog [here](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html)
+* The `functionapp` template which deploys an [Azure Function App](https://azure.microsoft.com/en-us/products/functions) to forward implant traffic as discussed on my blog [here](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html)
+* The `azurefd` template that deploys an [Azure Front Door](https://azure.microsoft.com/en-au/products/frontdoor) that forwards traffic through the previously discussed Function App to the C2 server
+* The `apim` template that deploys an [API Management Service](https://azure.microsoft.com/en-us/products/api-management) API that can forward traffic through the configured Function App to the C2 server
 
 
 # Creating the Resource Group
@@ -150,6 +152,11 @@ Then, deploy the zip file to your app as follows, replacing `<FUNCTION_APP_NAME_
 az functionapp deployment source config-zip -g C2VMRG -n <FUNCTION_APP_NAME_HERE> --src /tmp/dep.zip
 ```
 
+You can get the function app host name like so:
+```
+az functionapp list -g C2VMRG  --query '[0].hostNames[0]'
+```
+
 Check the [blog post](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html) for more context on how this works.
 
 
@@ -204,10 +211,10 @@ az deployment group create --resource-group C2VMRG --template-file template.json
 ```
 
 
-Monitor the status of the deployment - it takes a while, wait until the status is Succeeded.
+Monitor the status of the deployment - it takes a while, and usually the the process will not complete until the deployment is done - you will also get an email to the configured address notifying you. Its also possible to do incremental checks on progress using the folliwng command, looking for the "Succeeded" status to be returned.
 
 ```
-az apim list --query '[0].[name, provisioningState]'
+az apim list -g C2VMRG --query '[0].[name, provisioningState]'
 ```
 
 
