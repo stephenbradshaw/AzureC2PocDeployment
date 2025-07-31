@@ -254,5 +254,4 @@ mv /opt/sliver/admin_127.0.0.1.cfg /home/ubuntu/.sliver-client/configs/
 chown ubuntu:ubuntu -R /home/ubuntu/.sliver-client
 sudo -u ubuntu HOME=/home/ubuntu /bin/bash -c "echo http -l 8888 -p | /opt/sliver/sliver-client"
 
-echo "Test script at $MRANDOM.php"
-touch /home/ubuntu/setupdone
+echo "Test script at $MRANDOM.php" > /home/ubuntu/setupdone

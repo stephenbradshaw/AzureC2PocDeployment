@@ -42,11 +42,19 @@ There is also a user data script that will run on VM startup and do the Operatin
 
 This install script can take a little while to finish execution, so make sure you check for the file `/home/ubuntu/setupdone` that is created at the end of the script execution before trying to fix anything. 
 
-The contents of the install script is listed in the `install.sh` file, but needs to be base64 encoded and placed in the `userData.value` section of the `parameters.json` file before deployment. If you want to change the contents of the script, be sure to update this field before deployment - you can encode in the right format using a command like so:
+The contents of the install script is listed in the `install.sh` file, but needs to be base64 encoded and placed in the `parameters.userData.value` section of the `parameters.json` file before deployment. If you want to change the contents of the script, be sure to update this field before deployment - you can encode in the right format using a command like so:
 
 ```
 cat install.sh | base64 -w 0
 ```
+
+With jq, you can create an updated version of the parameters file containing any updated content from install.sh as follows:
+
+```
+jq --arg userdata "$(cat install.sh | base64 -w 0)" '.parameters.userData.value = $userdata' parameters.json > new_parameters.json
+mv new_parameters.json parameters.json
+```
+
 
 ## Settings to change before deployment
 
