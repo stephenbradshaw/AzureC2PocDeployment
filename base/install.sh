@@ -30,7 +30,7 @@ cat > /etc/apache2/sites-available/ssl-forward-http.conf <<'endmsg'
     RewriteEngine On
 
     <Directory /var/www/html>
-        Options FollowSymLinks MultiViews
+        Options FollowSymLinks
         AllowOverride All
         Require all granted
         FileETag None
@@ -56,7 +56,7 @@ cat > /etc/apache2/sites-available/forward-http.conf <<'endmsg'
     RewriteEngine On
 
     <Directory /var/www/html>
-        Options FollowSymLinks MultiViews
+        Options FollowSymLinks
         AllowOverride All
         Require all granted
         FileETag None
@@ -132,6 +132,12 @@ RewriteEngine on
 
 # rewrite / to index.html
 RewriteRule ^$ /index.html [L]
+
+# serve existing extensionless files that have .php extensions
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [L]
 
 # serve files that exist
 RewriteCond /%{REQUEST_FILENAME} -f
