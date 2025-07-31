@@ -201,9 +201,14 @@ az afd endpoint list -g C2VMRG --profile-name MyFrontDoor --query '[].hostName |
 
 # Creating an API Management service instance for C2 fronting
 
-Rough instructions only for the moment. This creates an API Management service that can front the Function App deployment mentioned above. Set that up first.
+The related files for this deployment template sit in `./apim`. For more information on the API Management service setup, see the [blog post here](https://thegreycorner.com/2025/07/30/azure-service-c2-forwarding-part4.html).
 
-Replace parameters in file. API_NAME needs to be globally unique, I might fix this in the template to generate the name randomly to help here
+This template deploys an API Management service that will facilitate forwarding traffic to an existing Azure Function App (that forwards to a C2) as discussed above. This will essentially provide an new entry point (with name and SSL certificate within the `azure-api.net` domain) for implant traffic that can be used in addition to or instead of the Function App endpoint.
+
+You need to provide two values of your own for the deployment. The first is `API_NAME`, which is used for the first component of the DNS name for the API service (in the `azure-api.net` domain) and needs to be globally unique within Azure. Perform a DNS resolution for your name of choice to see if its already in use. The second value is a `NOTIFY_EMAIL`, which is set to an email address which will be sent a notification email once the API service is deployed and available.
+
+
+These values can be set in the `parameters.json` file as follows:
 ```
 export API_NAME=myapi987654321
 sed -i "s/<API_NAME>/$API_NAME/g" parameters.json
@@ -212,21 +217,21 @@ export NOTIFY_EMAIl='myemail@whatever.com'
 sed -i "s/<NOTIFY_EMAIL>/$NOTIFY_EMAIl/g" parameters.json
 ```
 
-Deploy
+Once the values are set you can perform the deployment like so:
 
 ```
 az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
 ```
 
 
-Monitor the status of the deployment - it takes a while, and usually the the process will not complete until the deployment is done - you will also get an email to the configured address notifying you. Its also possible to do incremental checks on progress using the folliwng command, looking for the "Succeeded" status to be returned.
+Monitor the status of the deployment - it takes a while, and usually the the launched `az` process will not return until the deployment is done - you will also get an email to the configured address notifying you. Its also possible to do incremental checks on progress using the folliwng command, looking for the "Succeeded" status to be returned.
 
 ```
 az apim list -g C2VMRG --query '[0].[name, provisioningState]'
 ```
 
 
-Once deployed you need to create an API instance
+Once deployed you need to create an API instance within the service to actually perform the traffic forwarding. This can be done as follows:
 
 ```
 export API_SERVICE_NAME=$(az apim list --query '[0].name' | jq -r)
@@ -235,10 +240,17 @@ az apim api import -g C2VMRG -n $API_SERVICE_NAME --specification-format OpenApi
 ```
 
 
-Once deployed you can retrieve the URL at which the frontend will be available as follows
+Once deployed you can retrieve the URL at which the frontend will be available as follows:
 
 ```
-az apim list --query '[0].gatewayUrl'
+az apim list -g C2VMRG --query '[0].gatewayUrl'
+```
+
+Testing that the who setup is functioning can be done using the following commands, which should return an empty HTML page (the contents of `/var/www/html/index.html` on the Azure C2 VM).
+
+```
+export APIGW_URL=$(az apim list -g C2VMRG --query '[0].gatewayUrl' | jq -r)
+curl $APIGW_URL
 ```
 
 
