@@ -2,9 +2,6 @@
     "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "subscriptionId": {
-            "type": "string"
-        },
         "name": {
             "type": "string"
         },
@@ -108,7 +105,7 @@
                 "publicNetworkAccess": "Enabled",
                 "vnetRouteAllEnabled": true,
                 "httpsOnly": true,
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
+                "serverFarmId": "[concat('/subscriptions/', subscription().subscriptionId,'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]"
             },
             "resources": [
                 {
@@ -161,7 +158,7 @@
             "apiVersion": "2020-07-01",
             "name": "[variables('outboundSubnetDeployment')]",
             "resourceGroup": "C2VMRG",
-            "subscriptionId": "9d4d896b-cb2e-499c-bee3-eed2e1cc9aa3",
+            "subscriptionId": "[subscription().subscriptionId]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
@@ -223,7 +220,7 @@
                 "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
             ],
             "resourceGroup": "C2VMRG",
-            "subscriptionId": "[parameters('subscriptionId')]",
+            "subscriptionId": "[subscription().subscriptionId]",
             "properties": {
                 "mode": "Incremental",
                 "template": {
