@@ -1,0 +1,64 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "value": "<APP_NAME>"
+        },
+        "location": {
+            "value": "westus2"
+        },
+        "containers": {
+            "value": [
+                {
+                    "name": "<APP_NAME>",
+                    "image": "docker.io/stephenbradshaw/httpforwardcontainer:latest",
+                    "command": [],
+                    "args": [],
+                    "resources": {
+                        "cpu": 0.5,
+                        "memory": "1Gi"
+                    },
+                    "env": [
+                        {
+                            "name": "DESTINATION",
+                            "value": "10.0.0.4"
+                        },
+                        {
+                            "name": "TESTROUTE",
+                            "value": "health"
+                        }
+                    ]
+                }
+            ]
+        },
+        "registries": {
+            "value": []
+        },
+        "secrets": {
+            "value": {
+                "arrayValue": []
+            }
+        },
+        "ingress": {
+            "value": {
+                "external": true,
+                "transport": "Auto",
+                "allowInsecure": true,
+                "stickySessions": {
+                    "affinity": "none"
+                },
+                "additionalPortMappings": []
+            }
+        },
+        "environmentName": {
+            "value": "managedEnvironment-C2VMRG-containerappenv"
+        },
+        "workspaceName": {
+            "value": "workspacec2vmrgb903"
+        },
+        "workspaceLocation": {
+            "value": "westus2"
+        }
+    }
+}

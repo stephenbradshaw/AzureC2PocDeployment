@@ -16,6 +16,7 @@ There are currently two different sets of templates available here:
 * The `functionapp` template which deploys an [Azure Function App](https://azure.microsoft.com/en-us/products/functions) to forward implant traffic as discussed on my blog [here](https://thegreycorner.com/2025/05/07/azure-service-C2-forwarding.html)
 * The `azurefd` template that deploys an [Azure Front Door](https://azure.microsoft.com/en-au/products/frontdoor) that forwards traffic through the previously discussed Function App to the C2 server
 * The `apim` template that deploys an [API Management Service](https://azure.microsoft.com/en-us/products/api-management) API that can forward traffic through the configured Function App to the C2 server
+* The `containerapp` template that deploys a [Container App](https://azure.microsoft.com/en-us/products/container-apps) instance that can forward traffic through a private VPC to the C2 server
 
 
 # Creating the Resource Group
@@ -246,12 +247,46 @@ Once deployed you can retrieve the URL at which the frontend will be available a
 az apim list -g C2VMRG --query '[0].gatewayUrl'
 ```
 
-Testing that the who setup is functioning can be done using the following commands, which should return an empty HTML page (the contents of `/var/www/html/index.html` on the Azure C2 VM).
+Testing that the whole setup is functioning can be done using the following commands, which should return an empty HTML page (the contents of `/var/www/html/index.html` on the Azure C2 VM).
 
 ```
 export APIGW_URL=$(az apim list -g C2VMRG --query '[0].gatewayUrl' | jq -r)
 curl $APIGW_URL
 ```
+
+# Creating a Container App instance for C2 fronting
+
+The related files for this deployment template sit in `./containerapp`.
+
+This template deploys a Container App instance that will facilitate forwarding traffic to the C2 server . This will provide an entry point (with name and SSL certificate within the `azurecontainerapps.io` domain) for implant traffic.
+
+You need to provide one values of your own for the deployment - the `APP_NAME` value, which is used for the first component of the DNS name for the API service (in the `azurecontainerapps.io` domain). 
+
+These values can be set in the `parameters.json` file as follows:
+```
+export APP_NAME=testabc123cba
+sed -i "s/<APP_NAME>/$APP_NAME/g" parameters.json
+```
+
+Once the values are set you can perform the deployment like so:
+
+```
+az deployment group create --resource-group C2VMRG --template-file template.json --parameters @parameters.json
+```
+
+Once deployed you can get the domain for the container with the following command:
+
+```
+az containerapp list -g C2VMRG --query '[0].properties.configuration.ingress.fqdn'
+```
+
+Testing that the whole setup is functioning can be done using the following commands, which should return an empty HTML page (the contents of `/var/www/html/index.html` on the Azure C2 VM).
+
+```
+export CADOMAIN=$(az containerapp list -g C2VMRG --query '[0].properties.configuration.ingress.fqdn' | jq -r)
+curl "https://$CADOMAIN/"
+```
+
 
 
 # Deleting the resources
